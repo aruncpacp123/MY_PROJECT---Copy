@@ -1,0 +1,12 @@
+Online Examination System
+
+Three thype of Users
+Student,Teacher,An Office assistant act like admin
+
+Student Have the Option to Register under an Institution or Not under any
+If Student is Register Under An Institution He fill the registration form and the admin of the institution should verify that request and confirm that complete his registeration
+But if not under any Institution He can login register immediately
+Teacher have only one option to login,It is under an Institution
+Teacher can Conduct Exam In public and Private mode
+If Exam is public any student even the student outside the institution can register for exam and attend it if teacher verify that student and confirm
+If exam is Private Only the Students who Is added by Teacher Can Attend It
