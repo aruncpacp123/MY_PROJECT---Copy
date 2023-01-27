@@ -211,7 +211,8 @@ function course4(){
         </div>
         <div class="top2">
             <label for="inp9"><h5>Course Id</h5></label>
-            <div id="txtHint"><input type="text" id="inp9" placeholder="Enter Course Id.." name="studcid"></input></div>
+            <!--<div id="txtHint"><input type="text" id="inp9" placeholder="Enter Course Id.." name="studcid"></input></div>-->
+            <select name="studcid" id="txtHint"><option>Select a Course</option></select>
             <input type="hidden" id="inp12" name="studcid" >
         </div>
         <div class="top2">
