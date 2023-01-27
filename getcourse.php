@@ -12,7 +12,7 @@ $result2 = mysqli_query($dbcon,$sql2);
 ?>
                             <!--<select class="loginselect" name="studcid" id="studcid" onchange=course4()>-->
                             <?php  
-                               echo "<option value=''>Select a Course</option>"; 
+                               echo "<option value='' selected disabled>Select a Course</option>"; 
                             while($row=mysqli_fetch_array($result2))
                             {
                                 
