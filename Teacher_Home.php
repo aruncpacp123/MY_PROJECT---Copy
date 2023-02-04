@@ -19,6 +19,24 @@ include_once "Scripts/session.php";
             echo'<script>alert("'.@$_GET['w'].'");</script>';
         }
     ?>
+    <style>
+      @media print {
+  body * {
+    visibility: hidden;
+  }
+  #section-to-print, #section-to-print * {
+    visibility: visible;
+  }
+  #section-to-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  #new *{
+    visibility: hidden;
+  }
+}
+    </style>
     <script>
       function check() {
         var text = document.getElementById("text");
@@ -137,7 +155,7 @@ $did=$_SESSION['department'];
         $sql="select * from exam where Institution_Id='$iid' and Teacher_Id='$tid'";
         $result = mysqli_query($dbcon,$sql) or die('Error');
         echo  '<div class="mt-5"><div class="table-responsive"><table class=" table table-striped table-bordered">
-        <tr><td><b>S.N.</b></td><td><b>Topic</b></td><td><b>Course</b></td><td><b>Total question in Quiz</b></td><td><b>Total question in Subjective</b></td><td><b> Total Marks</b></td><td><b>Time limit</b></td><td></td></tr>';
+        <tr><td><b>S.N.</b></td><td><b>Topic</b></td><td><b>Course</b></td><td><b>Total question in Quiz</b></td><td><b>Total question in Subjective</b></td><td><b> Total Marks</b></td><td><b>Time limit</b></td><td></td><td></td></tr>';
         $c=1;
         if(mysqli_num_rows($result)>0){
           while($row = mysqli_fetch_array($result)) {
@@ -187,7 +205,7 @@ $did=$_SESSION['department'];
             //$rowcount=mysqli_num_rows($q12);	
             
 	            echo '<tr><td>'.$c++.'</td><td>'.$title.'</td><td>'.$cname.'</td><td>'.$qtotal.'</td><td>'.$stotal.'</td><td>'.$mark.'</td><td>'.$time.'&nbsp;min</td>
-	            <td><b><a href="Teacher_Home.php?q=manageexam&step=1&eid='.$eid.'&qid='.$qid.'&sid='.$sid.'&stotal='.$stotal.'"><span class="btn btn-success"><b>View</b></span></a></b></td></tr>';
+	            <td><b><a href="Teacher_Home.php?q=manageexam&step=1&eid='.$eid.'&qid='.$qid.'&sid='.$sid.'&stotal='.$stotal.'"><span class="btn btn-success"><b>View</b></span></a></b></td><td><b><a href="Teacher_Home.php?q=printresult&eid='.$eid.'&qid='.$qid.'&sid='.$sid.'&stotal='.$stotal.'"><span class="btn btn-success"><b>Result</b></span></a></b></td></tr>';
             
             
             /*if(true){
@@ -787,6 +805,104 @@ $did=$_SESSION['department'];
       </div>
       <?php
       }
+      ?>
+      <?php
+        if(@$_GET['q']=="printresult"){
+          ?>
+          <div class="container">
+          <div class="row mt-5">
+            <div class="col-lg-12">
+            <div id="section-to-print">
+  
+              <?php
+                $eid=@$_GET['eid'];
+                $sql="select * from exam where Exam_Id=$eid";
+                $data=mysqli_query($dbcon,$sql);
+                $row=mysqli_fetch_array($data);
+                $cid=$row['Course_Id'];
+                $sql2="select * from course where Course_Id=$cid";
+                $data2=mysqli_query($dbcon,$sql2);
+                $row2=mysqli_fetch_array($data2);
+                echo '<table border=4 width=100%>
+                  <tr><th style="width:40%;text-align:left;">Exam Name:&nbsp;&nbsp;&nbsp;&nbsp;'.$row["Exam_Name"].'</th><th style="width:40%;text-align:right;">Course:&nbsp;&nbsp;&nbsp;&nbsp;'.$row2["Course_Name"].'</th><th rowspan=2 id="new" style="width:20%;text-align:right;"><button class="btn btn-primary" onClick="window.print()"><i class="bi bi-printer"></i>&nbsp;&nbsp;&nbsp;Print </button></th></tr>
+                  <tr><th style="width:40%;text-align:left;">Date of Exam:&nbsp;&nbsp;&nbsp;&nbsp;'.$row["Date"].'</th><th style="width:40%;text-align:right;">Duration:&nbsp;&nbsp;&nbsp;&nbsp;'.$row["Duration"].'&nbsp;&nbsp;Minutes</th></tr>
+
+                </table>';
+                $qid=@$_GET['qid'];
+        $sid=@$_GET['sid'];
+        $stotal=@$_GET['stotal'];
+        echo '<table class=" table table-striped table-bordered mt-5">
+        <tr><td><b>S.N.</b></td><td><b>Student Id</b></td><td><b>Name</b></td><td><b>Quiz mark</b></td><td><b>Subjective Mark</b></td><td>Total</td></tr>';
+        $sql="SELECT * from student where E_Mail IN(SELECT email from examresult where Exam_Id=$eid)";
+        $data=mysqli_query($dbcon,$sql); 
+        $c=1;
+        if(mysqli_num_rows($data)>0){
+          while($row=mysqli_fetch_array($data)){
+              $email=$row['E_Mail'];
+              $sel="SELECT * from examresult where email='$email' and Exam_Id=$eid";
+              $data2=mysqli_query($dbcon,$sel);
+              while($row2=mysqli_fetch_array($data2)){
+                echo '<tr><td><b>'.$c++.'</b></td><td><b>'.$row['Student_Id'].'</b></td><td><b>'.$row['Name'].'</b></td>';
+                //<td><b>Quiz mark</b></td><td><b>Subjective Mark</b></td><td>Total</td><td>Completed</td><td></td></tr>';
+                $qmark=$row2['Quiz_Total'];
+                $smark=$row2['Subjective_Total'];
+                if($qmark==-1)
+                {
+                    echo '<td>No Quiz</td>';
+                    if($smark==-1)
+                    {
+                      echo '<td>Not Checked</td>';
+                      echo '<td>Not Verified</td>';
+                    }
+                    else
+                    {
+                      echo '<td>'.$smark.'</td>';
+                      echo '<td>'.$smark.'</td>';
+                    }
+
+                }
+                elseif($sid==0)
+                {
+                   echo '<td>'.$qmark.'</td>';
+                   echo '<td>No Subjective</td>' ;
+                   echo '<td>'.$qmark.'</td>';
+                }
+                else
+                {
+                    echo '<td>'.$qmark.'</td>';
+                    if($smark==-1)
+                    {
+                      echo '<td>Not Checked</td>';
+                      echo '<td>Not Verified</td>';
+                    }
+                    else
+                    {
+                      echo '<td>'.$smark.'</td>';
+                      echo '<td>'.$smark+$qmark.'</td>';
+                    }
+                }
+              
+              }
+          }
+        }
+        else{
+          echo '<tr><td colspan=5>No One Attend the Exam</td></tr>';
+        }
+        /*$s="SELECT * from examresult where Exam_Id=$eid and email NOT IN(SELECT E_Mail from student)";
+        $q=mysqli_query($dbcon,$s);
+        if(mysqli_num_rows($q)>0){
+          while ($r=mysqli_fetch_array($q)) {
+            echo '<tr><td><b>'.$c++.'</b></td><td><b>'.$r['email'].'</b></td><td><b>'.$row['Name'].'</b></td>';
+          }
+        }*/
+        echo '</table>';
+                ?>
+                </div>
+            </div>
+          </div>
+        </div>
+        <?php
+        }
       ?>
             <?php
         if(@$_GET['q']==2){
