@@ -18,7 +18,7 @@ if(!empty($_GET['id'])){
 
 <!-- Render the user details -->
 <div class="container">
-    <h2>User Details</h2>
+    <h2>STUDENT DETAILS</h2>
             <table class="table tabled-bordered" border=3>
                 <tr>
                     <th>S.No</th><th>Name</th><th>EMail</th><th>Date Of Birth</th><th>Age</th><th>Gender</th><th>Course</th><th>Year Of Admission</th>

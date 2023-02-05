@@ -5,11 +5,18 @@
 
 <?php
 $q = intval($_GET['q']);
-
+session_start();
 include("Scripts/connection.php");
 $iid=$_SESSION['institution'];
-                $sel="select * from student where Institution_Id=$iid and Course_Id=$q order by Year_Of_Admission";//and verified='yes' group by Course_Id
+
+if($q!=0){
+                $sel="select * from student where Course_Id=$q order by Year_Of_Admission";//and verified='yes' group by Course_Id
                 $data=mysqli_query($dbcon,$sel);
+}
+else{
+    $sel="select * from student where Institution_Id=$iid order by Course_Id,Year_Of_Admission";//and verified='yes' group by Course_Id
+                $data=mysqli_query($dbcon,$sel);
+}
 ?>
 <table class="table tabled-bordered" border=3>
                 <tr>
@@ -17,6 +24,7 @@ $iid=$_SESSION['institution'];
                 </tr>
                 <?php
                     $c=1;
+                    if(mysqli_num_rows($data)>0){
                     while($row=mysqli_fetch_array($data))
                     {
                         $id=$row['Student_Id'];
@@ -36,6 +44,10 @@ $iid=$_SESSION['institution'];
                         //here make it a button/span/a href and onclick a function is called to ajax and data is updated and change the last two column to accepted or rejected
                         //if a href then no ajax becuase we cant apply function call when click a link because it will move to next or we can use submit button and formaction attribute to sent it and update database and return by reloading page 
                     }
+                }
+                else{
+                    echo "No records";
+                }
                 ?>
             </table>
 

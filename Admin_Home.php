@@ -40,7 +40,9 @@ include_once("Scripts/session.php");
   td.newhide *{
     visibility: hidden;
   }
-  
+  .oknoted *{
+    display:none;
+  }
 }
     </style>
     <script>
@@ -296,6 +298,7 @@ if (str == "") {
   xmlhttp.send();
   
 }
+      }
     </script>
 </head>
 <body>
@@ -1022,7 +1025,7 @@ $did=$_SESSION['department'];
       <?php 
       if(@$_GET['q']==3){
         ?>
-        <div class="row mt-">
+        <div class="row mt-1">
         <div class="col-lg-12">
             <?php
                 $iid=$_SESSION['institution'];
@@ -1030,49 +1033,49 @@ $did=$_SESSION['department'];
                 $data=mysqli_query($dbcon,$sel);
             ?>
             <div class="row">
-              <div class="col-lg-8" style="text-align:left;">
-                <?php
-                $result = $dbcon->query("SELECT * FROM course");
-                 ?>
-                 <div class="row">
-                  <div class="col-lg-4">
-                <select id="userSelect" class="form-control" >
-                  <option value="">Select Course</option>
-                    <?php while($row = $result->fetch_assoc()){ ?>
-                          <option value="<?php echo $row['Course_Id']; ?>"><?php echo $row['Course_Name']; ?></option>
-                    <?php } ?>
-                </select>
-                    </div>
+              <div class="col-lg-12">
+                <div class="row">
+                      <?php
+                      $result = $dbcon->query("SELECT * FROM course");
+                       ?>
+                  <div class="col-lg-6">
+                    <div class="row">
+                      
                     <div class="col-lg-3">
-                <!-- Print button -->
-                <button id="getUser" class="btn btn-secondary">Print Details</button>
+                      <select id="userSelect" class="form-control" >
+                        <option value="">Select Course</option>
+                          <?php while($row = $result->fetch_assoc()){ ?>
+                                <option value="<?php echo $row['Course_Id']; ?>"><?php echo $row['Course_Name']; ?></option>
+                          <?php } ?>
+                      </select>
+                          </div>
+                          <div class="col-lg-3">
+                      <button id="getUser" class="btn btn-secondary">Print Details</button>
                     </div>
-                    </div>
-                <!-- Hidden div to load the dynamic content -->
-                <div id="userInfo" style="display: none;"></div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-8" style="text-align:left;">
-                <?php
-                $result = $dbcon->query("SELECT * FROM course");
-                 ?>
-                 <div class="row">
-                  <div class="col-lg-4">
-                <select id="userSelect" class="form-control" onchange="content(this.value)">
-                  <option value="">Select Course</option>
-                    <?php while($row = $result->fetch_assoc()){ ?>
-                          <option value="<?php echo $row['Course_Id']; ?>"><?php echo $row['Course_Name']; ?></option>
-                    <?php } ?>
-                </select>
-                    </div>
-                    <div class="col-lg-3">
-                <!-- Print button -->
-                <button id="getUser" class="btn btn-secondary">Print Details</button>
-                    </div>
-                    </div>
-                <!-- Hidden div to load the dynamic content -->
-                <div id="userInfo" style="display: none;"></div>
+                      <div id="userInfo" style="display: none;"></div>
+                          </div>
+                  </div>
+                  <?php
+                      $result = $dbcon->query("SELECT * FROM course");
+                       ?>
+                  <div class="col-lg-6" style="align-content:left;">
+                  
+                    <div class="row">
+                      <div class="col-lg-3"></div>
+                      <select id="userSelect" class="form-control" onchange="content(this.value)" style="width:350px;margin-left:400px;">
+                        <option value="">Select Course</option>
+                        <option value="0">All</option>
+                          <?php while($row = $result->fetch_assoc()){ ?>
+                                <option value="<?php echo $row['Course_Id']; ?>"><?php echo $row['Course_Name']; ?></option>
+                          <?php } ?>
+                      </select>
+                        
+                          
+                      <!-- Hidden div to load the dynamic content -->
+                      <div id="userInfo" style="display: none;"></div>
+                          </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="row mt-3">
@@ -1098,7 +1101,8 @@ $did=$_SESSION['department'];
                         $d=mysqli_query($dbcon,$sql);
                         $row2=mysqli_fetch_array($d);
                         $cna=$row2['Course_Name'];
-                        echo' <tr><td>'.$c++.'</td><td>'.$name.'</td><td>'.$email.'</td><td>'.$dob.'</td><td>'.$age.'</td><td>'.$gender.'</td><td>'.$cna.'</td><td>'.$yoa.'</td><td id="txtHint'.$id.'" class="newhide"><i class="bi bi-trash btn btn-outline-danger p-1" onclick="studremove('.$id.')">   Delete</i></td></tr>';
+                        echo' <tr><td>'.$c++.'</td><td>'.$name.'</td><td>'.$email.'</td><td>'.$dob.'</td><td>'.$age.'</td><td>'.$gender.'</td><td>'.$cna.'</td><td>'.$yoa.'</td><td id="txtHint'.$id.'" class="oknoted"><i class="bi bi-trash btn btn-outline-danger p-1" onclick="studremove('.$id.')">   Delete</i>&nbsp;&nbsp;<button class="btn btn-success" id="getUser2'.$id.'" onclick="printuser('.$id.')" value="'.$id.'">View</button></td></tr>';
+                        echo ' <div id="userInfo" style="display: none;"></div>';
                         //echo' <tr><td>'.$c++.'</td><td>'.$name.'</td><td>'.$email.'</td><td>'.$dob.'</td><td>'.$age.'</td><td>'.$gender.'</td><td>'.$cna.'</td><td>'.$yoa.'</td><td><form action=""><button value=" $studentid">Accept</button></form></td><td>Reject</td></tr>';
                         //here make it a button/span/a href and onclick a function is called to ajax and data is updated and change the last two column to accepted or rejected
                         //if a href then no ajax becuase we cant apply function call when click a link because it will move to next or we can use submit button and formaction attribute to sent it and update database and return by reloading page 
@@ -1125,9 +1129,10 @@ $did=$_SESSION['department'];
                 $sel="select * from user where Institution_Id=$iid and User_Type='teacher'";//and verified='yes'change this as when press each department teachers under it will be displayed
                 $data=mysqli_query($dbcon,$sel);
             ?>
+            <div id="section-to-print">
             <table class="table tabled-bordered table-striped" border="3">
                 <tr>
-                    <th>S.No</th><th>Name</th><th>EMail</th><th>Date Of Birth</th><th>Age</th><th>Gender</th><th>Department</th><th>Mobile No</th><th>Address</th><th></th>
+                    <th>S.No</th><th>Name</th><th>EMail</th><th>Date Of Birth</th><th>Age</th><th>Gender</th><th>Department</th><th>Mobile No</th><th>Address</th><th id="new" style="width:20%;text-align:center;"><button class="btn btn-primary" onClick="window.print()"><i class="bi bi-printer"></i>&nbsp;&nbsp;&nbsp;Print </button></th>
                 </tr>
                 <?php
                     $c=1;
@@ -1151,7 +1156,7 @@ $did=$_SESSION['department'];
                         $n=mysqli_num_rows($data4);
                         echo' <tr><td>'.$c++.'</td><td>'.$name.'</td><td>'.$email.'</td><td>'.$dob.'</td><td>'.$age.'</td><td>'.$gender.'</td><td>'.$dna.'</td><td>'.$mob.'</td><td>'.$add.'</td>
   
-                                <td id="txtHint21'.$id.'" style="min-width:130px;text-align:center"><b><abbr title = "Move to Another Department"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal'.$id.'">Move</button></abbr></b>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <td id="txtHint21'.$id.'" class="oknoted" style="min-width:130px;text-align:center"><b><abbr title = "Move to Another Department"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal'.$id.'">Move</button></abbr></b>&nbsp;&nbsp;&nbsp;&nbsp;
                                 <i class="bi bi-trash btn btn-outline-danger p-1" onclick="teacherremove('.$id.','.$n.')">   Delete</i></td></tr>';
 
                         echo '<div class="modal fade" id="exampleModal'.$id.'" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">';?>
@@ -1198,7 +1203,7 @@ $did=$_SESSION['department'];
                     }
                 ?>
             </table>
-       
+                  </div>
         </div>
     </div>
 
@@ -1232,6 +1237,29 @@ $(document).ready(function(){
         });
     });
 });
+function printuser(val){
+$(document).ready(function(){
+  
+    $('#getUser2'+val).on('click',function(){
+      
+        var userID = $('#getUser2'+val).val();
+        
+        $('#userInfo').load('getstud.php?id='+userID,function(){
+            var printContent = document.getElementById('userInfo');
+            var WinPrint = window.open('', '', 'width=900,height=650');
+            WinPrint.document.write(printContent.innerHTML);
+            WinPrint.document.close();
+            WinPrint.focus();
+            WinPrint.print();//To print the page when clicking view button uncomment this and below one line
+            //WinPrint.close();
+            setTimeout(function(){//This function reload page after 2 secs
+
+              WinPrint.close();
+                }, 15000);
+        });
+    });
+});
+}
 </script>
     <?php
     }//closing of isset($_SESSION['role'];
